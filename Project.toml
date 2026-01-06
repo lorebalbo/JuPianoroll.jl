@@ -1,0 +1,13 @@
+name = "JuPianoroll"
+uuid = "62195a11-89b5-4d1c-83fc-685de7b832c5"
+authors = ["Lorenzo Balboni"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.10.10"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
