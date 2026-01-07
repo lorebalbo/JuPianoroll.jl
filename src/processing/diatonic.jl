@@ -24,6 +24,10 @@ function diatonic!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMu
     return multitrack
 end
 
+function diatonic!(multitrack::AbstractMultitrack, key::AbstractString)::AbstractMultitrack
+    return diatonic!(multitrack, parsekey(key))
+end
+
 """
     diatonic(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
 
@@ -42,4 +46,8 @@ zero all columns (pitches) that are not in the specified key. The original multi
 """
 function diatonic(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
     return diatonic!(deepcopy(multitrack), key)
+end
+
+function diatonic(multitrack::AbstractMultitrack, key::AbstractString)::AbstractMultitrack
+    return diatonic!(deepcopy(multitrack), parsekey(key))
 end
