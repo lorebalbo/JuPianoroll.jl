@@ -16,6 +16,7 @@ export binarize, binarize!
 export transpose, transpose!
 export attack_only
 export movingwindow
+export diatonic, diatonic!
 
 # Utils
 export key_distance
