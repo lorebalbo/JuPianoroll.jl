@@ -1,4 +1,4 @@
-using GLMakie
+using Makie
 
 function sia(
         D::Vector{CartesianIndex{N}},
