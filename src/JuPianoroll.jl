@@ -19,6 +19,7 @@ export movingwindow
 
 # Utils
 export key_distance
+export parsekey
 
 # Pattern
 export sia, plot_mtp

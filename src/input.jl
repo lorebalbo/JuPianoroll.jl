@@ -141,7 +141,7 @@ end
 Parse a key string (e.g., "Cmaj", "A#min") into a Key object.
 If the input is `nothing`, returns `nothing`.
 """
-function _parsekey(key::Union{<:AbstractString, <:Nothing})::Union{AbstractKey, Nothing}
+function parsekey(key::Union{<:AbstractString, <:Nothing})::Union{AbstractKey, Nothing}
     if isnothing(key)
         return nothing
     else
@@ -187,7 +187,8 @@ Read a MIDI file from the specified path and convert it into a MultiTrack object
 function read_midi(
         path::AbstractString;
         resolution::Union{<:Integer, <:Nothing} = nothing,
-        key::Union{<:AbstractKey, <:AbstractString, <:Nothing} = nothing
+        key::Union{<:AbstractKey, <:AbstractString, <:Nothing} = nothing,
+        bpm::Union{<:Integer, <:Nothing} = nothing
     )::AbstractMultitrack
     if key isa AbstractKey
         key_parsed = key
@@ -202,7 +203,12 @@ function read_midi(
         resolution = midi.tpq
     end
 
-    midi  = _set_tempo(midi, _search_tempo(midi))
+    if !isnothing(bpm)
+        us_per_quarter = round(Int, 60_000_000 / bpm)
+        midi = _set_tempo(midi, us_per_quarter)
+    else
+        midi = _set_tempo(midi, _search_tempo(midi))
+    end
 
     tracks = Track[]
 
