@@ -1,5 +1,32 @@
 using Test
 
+@testset "notes_in_scale tests" begin
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.C, JuPianoroll.Major)) == [0, 2, 4, 5, 7, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Cs, JuPianoroll.Major)) == [0, 1, 3, 5, 6, 8, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.D, JuPianoroll.Major)) == [1, 2, 4, 6, 7, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Ds, JuPianoroll.Major)) == [0, 2, 3, 5, 7, 8, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.E, JuPianoroll.Major)) == [1, 3, 4, 6, 8, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.F, JuPianoroll.Major)) == [0, 2, 4, 5, 7, 9, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Fs, JuPianoroll.Major)) == [1, 3, 5, 6, 8, 10, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.G, JuPianoroll.Major)) == [0, 2, 4, 6, 7, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Gs, JuPianoroll.Major)) == [0, 1, 3, 5, 7, 8, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.A, JuPianoroll.Major)) == [1, 2, 4, 6, 8, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.As, JuPianoroll.Major)) == [0, 2, 3, 5, 7, 9, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.B, JuPianoroll.Major)) == [1, 3, 4, 6, 8, 10, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.C, JuPianoroll.Minor)) == [0, 2, 3, 5, 7, 8, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Cs, JuPianoroll.Minor)) == [1, 3, 4, 6, 8, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.D, JuPianoroll.Minor)) == [0, 2, 4, 5, 7, 9, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Ds, JuPianoroll.Minor)) == [1, 3, 5, 6, 8, 10, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.E, JuPianoroll.Minor)) == [0, 2, 4, 6, 7, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.F, JuPianoroll.Minor)) == [0, 1, 3, 5, 7, 8, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Fs, JuPianoroll.Minor)) == [1, 2, 4, 6, 8, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.G, JuPianoroll.Minor)) == [0, 2, 3, 5, 7, 9, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.Gs, JuPianoroll.Minor)) == [1, 3, 4, 6, 8, 10, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.A, JuPianoroll.Minor)) == [0, 2, 4, 5, 7, 9, 11]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.As, JuPianoroll.Minor)) == [0, 1, 3, 5, 6, 8, 10]
+    @test notes_in_scale(JuPianoroll.Key(JuPianoroll.B, JuPianoroll.Minor)) == [1, 2, 4, 6, 7, 9, 11]
+end
+
 @testset "key_distance tests" begin
     @test key_distance(JuPianoroll.Key(JuPianoroll.C, JuPianoroll.Major), JuPianoroll.Key(JuPianoroll.Cs, JuPianoroll.Major)) == 1
     @test key_distance(JuPianoroll.Key(JuPianoroll.C, JuPianoroll.Major), JuPianoroll.Key(JuPianoroll.D, JuPianoroll.Major)) == 2

@@ -20,9 +20,11 @@ export movingwindow
 # Utils
 export key_distance
 export parsekey
+export get_pitches_in_scale
 
 # Pattern
 export sia, plot_mtp
 export siatec, plot_siatec_result
+
 
 end

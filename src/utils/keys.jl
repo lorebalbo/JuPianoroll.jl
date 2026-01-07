@@ -43,3 +43,54 @@ function key_distance(key1::Key, key2::Key)::Integer
 
     return shortest_distance
 end
+
+"""
+    _notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
+
+Given a musical key, returns the notes in that scale as a vector of integers (MIDI numbers).
+
+# Arguments
+- `Key::AbstractKey`: the musical key (tonic and mode).
+
+# Returns
+- `AbstractVector{<:Integer}`: a vector of integers (MIDI numbers)
+"""
+function _notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
+    tonic = Int(Key.tonic)
+
+    intervals = Key.mode == JuPianoroll.Major ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 10]
+
+    notes = Set{Int}()
+
+    for interval in intervals
+        push!(notes, mod(tonic + interval, 12))
+    end
+
+    return sort(collect(notes))
+end
+
+"""
+    get_pitches_in_scale(
+        scale::AbstractString
+    )::AbstractVector{<:Integer}
+
+Given a scale in the format "Cmaj" or "Dmin", returns the pitches in that scale as a vector of integers.
+
+# Arguments
+- `scale::AbstractString`: the name of the scale (e.g., "Cmaj", "Dmin").
+
+# Returns
+- `AbstractVector{<:Integer}`: a vector of integers (MIDI numbers) representing the pitches in the scale.
+"""
+function get_pitches_in_scale(scale::AbstractString)::AbstractVector{<:Integer}
+    parsekey(scale) |> get_pitches_in_scale
+end
+
+function get_pitches_in_scale(
+        scale::AbstractKey
+    )::AbstractVector{<:Integer}
+    notes = _notes_in_scale(scale)
+    matrix = [i + (j-1)*11 for i in 1:11, j in 1:12]
+
+    filter(x -> x < 128, matrix[:, notes .+ 1])
+end
