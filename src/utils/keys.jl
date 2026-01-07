@@ -94,3 +94,77 @@ function get_pitches_in_scale(
 
     filter(x -> x < 128, matrix[:, notes .+ 1])
 end
+
+"""
+    get_pitches_range(
+        multitrack::AbstractMultitrack;
+        force_to_octave::Bool = false
+    )::Tuple{<:Integer, <:Integer}
+
+Get the upper bound and lower bound pitches used in a multitrack's pianorolls.
+
+# Arguments
+- `multitrack::AbstractMultitrack`: The multitrack containing tracks with pianorolls.
+- `force_to_octave::Bool`: If true, forces the range to align with the tonic's octave.
+
+# Returns
+- `Tuple{<:Integer, <:Integer}`: A tuple containing the lower and upper bound pitches.
+"""
+function get_pitches_range(
+        multitrack::AbstractMultitrack;
+        force_to_octave::Bool = false
+    )::Tuple{<:Integer, <:Integer}
+    lower_bounds = Int[]
+    upper_bounds = Int[]
+
+    for track in multitrack.tracks
+        lower_bound, upper_bound = get_pitches_range(track; key=multitrack.key, force_to_octave=force_to_octave)
+        push!(lower_bounds, lower_bound)
+        push!(upper_bounds, upper_bound)
+    end
+
+    return (minimum(lower_bounds), maximum(upper_bounds))
+end
+
+"""
+    get_pitches_range(
+        track::AbstractTrack;
+        force_to_octave::Bool = false
+    )::Tuple{<:Integer, <:Integer}
+
+Get the upper bound and lower bound pitches used in a track's pianoroll.
+
+# Arguments
+- `track::AbstractTrack`: The track containing the pianoroll.
+- `force_to_octave::Bool`: If true, forces the range to align with the tonic's octave.
+
+# Returns
+- `Tuple{<:Integer, <:Integer}`: A tuple containing the lower and upper bound pitches.
+"""
+function get_pitches_range(
+        track::AbstractTrack;
+        key::Union{<:AbstractKey, <:AbstractString, <:Nothing} = nothing,
+        force_to_octave::Bool = false
+    )::Tuple{<:Integer, <:Integer}
+    @assert !(force_to_octave && isnothing(key)), "If force_to_octave is true, a key must be provided."
+
+    if isa(key, AbstractString)
+        key = parsekey(key)
+    end
+
+    cols = eachcol(track.pianoroll)
+
+    lower_bound = findall(!iszero, cols)
+    upper_bound = findall(!iszero, reverse(cols))
+
+    if force_to_octave
+        tonic  = Int(key) + 1
+        tonics = [tonic + 12 * i for i in 0:11]
+        filter!(x -> 1 <= x <= 128, tonics)
+
+        upper_bound = findfirst(x -> x >= upper_bound, tonics)
+        lower_bound = findlast(x -> x <= lower_bound, tonics)
+    end
+
+    return lower_bound, upper_bound
+end

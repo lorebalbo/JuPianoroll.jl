@@ -22,6 +22,7 @@ export diatonic, diatonic!
 export key_distance
 export parsekey
 export get_pitches_in_scale
+export get_pitches_range
 
 # Pattern
 export sia, plot_mtp
