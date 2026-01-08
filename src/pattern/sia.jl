@@ -1,5 +1,3 @@
-using Makie
-
 """
 	sia(D::Vector{CartesianIndex{N}},
 	    min_pattern_size::Integer = 2

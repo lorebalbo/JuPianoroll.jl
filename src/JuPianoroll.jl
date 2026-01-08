@@ -1,12 +1,16 @@
 module JuPianoroll
 
 using MIDI
+using Makie
+using GLMakie
+using Plots
 
 include("types/index.jl")
 include("processing/index.jl")
 include("utils/index.jl")
 include("pattern/index.jl")
 include("analysis/index.jl")
+include("plotting/index.jl")
 
 include("input.jl")
 
@@ -37,6 +41,9 @@ export get_pitches_range
 # Pattern
 export sia, plot_mtp
 export siatec, plot_siatec_result
+
+# Plotting
+export plot_pianoroll
 
 
 end
