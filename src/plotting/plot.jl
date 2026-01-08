@@ -23,8 +23,6 @@ function plot_pianoroll(multitrack::AbstractMultitrack)
     y_min = isnothing(lower_bound) ? 0 : lower_bound - 1
     y_max = isnothing(upper_bound) ? 128 : upper_bound + 1
 
-    @show lower_bound upper_bound
-
     # Titolo della figura
     title_str = isnothing(multitrack.name) ? "Pianoroll" : multitrack.name
 
@@ -52,6 +50,7 @@ function plot_pianoroll(multitrack::AbstractMultitrack)
                    title = track.name,
                    xlabel = idx == n_tracks ? "Tempo" : "",
                    ylabel = "Pitch",
+                   xlims = (-1, size(pianoroll, 1)),
                    ylims = (y_min, y_max),
                    legend = false,
                    framestyle = :box)

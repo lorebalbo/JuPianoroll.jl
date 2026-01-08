@@ -2,7 +2,7 @@ module JuPianoroll
 
 using MIDI
 using Makie
-using GLMakie
+using CairoMakie
 using Plots
 
 include("types/index.jl")

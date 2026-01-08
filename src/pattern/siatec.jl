@@ -174,14 +174,14 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
     # Plot 1: Tutti i punti del dataset in blu
     ax1 = Axis(fig[1, 1], xlabel = "Time", ylabel = "Pitch")
     colors_all = fill(:blue, length(D))
-    scatter!(ax1, xs_all, ys_all, color = colors_all, markersize = 5)
+    Makie.scatter!(ax1, xs_all, ys_all, color = colors_all, markersize = 5)
     xlims!(ax1, x_lim)
     ylims!(ax1, y_lim)
 
     # Plot 2: Tutti i punti in blu tranne il pattern in rosso
     ax2 = Axis(fig[2, 1], xlabel = "Time", ylabel = "Pitch")
     colors_pattern = [p in pattern_cart ? :red : :blue for p in D]
-    scatter!(ax2, xs_all, ys_all, color = colors_pattern, markersize = 5)
+    Makie.scatter!(ax2, xs_all, ys_all, color = colors_pattern, markersize = 5)
     xlims!(ax2, x_lim)
     ylims!(ax2, y_lim)
 
@@ -196,7 +196,7 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
 
         ax = Axis(fig[2 + idx, 1], xlabel = "Time", ylabel = "Pitch",
                   title = "Translator $(Tuple(translator))")
-        scatter!(ax, xs_all, ys_all, color = colors_translated, markersize = 5)
+        Makie.scatter!(ax, xs_all, ys_all, color = colors_translated, markersize = 5)
         xlims!(ax, x_lim)
         ylims!(ax, y_lim)
     end
@@ -219,10 +219,10 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
 
             if plot_idx == 1
                 ax = Axis(individual_fig[1, 1], xlabel = "Time", ylabel = "Pitch")
-                scatter!(ax, xs_all, ys_all, color = fill(:blue, length(D)), markersize = 5)
+                Makie.scatter!(ax, xs_all, ys_all, color = fill(:blue, length(D)), markersize = 5)
             elseif plot_idx == 2
                 ax = Axis(individual_fig[1, 1], xlabel = "Time", ylabel = "Pitch")
-                scatter!(ax, xs_all, ys_all, color = colors_pattern, markersize = 5)
+                Makie.scatter!(ax, xs_all, ys_all, color = colors_pattern, markersize = 5)
             else
                 translator_idx = plot_idx - 2
                 translator = result.translators[translator_idx]
@@ -230,7 +230,7 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
                 colors_translated = [p in translated_pattern ? :red : :blue for p in D]
                 ax = Axis(individual_fig[1, 1], xlabel = "Time", ylabel = "Pitch",
                          title = "Translator $(Tuple(translator))")
-                scatter!(ax, xs_all, ys_all, color = colors_translated, markersize = 5)
+                Makie.scatter!(ax, xs_all, ys_all, color = colors_translated, markersize = 5)
             end
 
             xlims!(ax, x_lim)

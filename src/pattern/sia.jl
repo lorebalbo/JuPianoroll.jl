@@ -62,6 +62,13 @@ function sia(
     return MTPs
 end
 
+function sia(
+        track::AbstractTrack;
+        min_pattern_size::Integer = 2
+    )::Vector{Tuple{CartesianIndex{2}, Vector{CartesianIndex{2}}}}
+    sia(findall(!iszero, track.pianoroll), min_pattern_size)
+end
+
 """
 	plot_mtp(D::Vector{CartesianIndex{N}},
 	         mtp::Tuple{CartesianIndex{N}, Vector{CartesianIndex{N}}}
@@ -102,19 +109,19 @@ function plot_mtp(
 
         # All points
         ax1 = Axis(fig[1, 1], title="All Points")
-        scatter!(ax1, xs_all, zeros(length(xs_all)), markersize=10)
+        Makie.scatter!(ax1, xs_all, zeros(length(xs_all)), markersize=10)
         limits!(ax1, x_lim..., -1, 1)
 
         # Pattern
         xs_red = [point[1] for point in pattern]
         ax2 = Axis(fig[2, 1], title="MTP")
-        scatter!(ax2, xs_red, zeros(length(xs_red)), color=:red, markersize=10)
+        Makie.scatter!(ax2, xs_red, zeros(length(xs_red)), color=:red, markersize=10)
         limits!(ax2, x_lim..., -1, 1)
 
         # Translated pattern
         xs_green = [point[1] for point in tralated_pattern]
         ax3 = Axis(fig[3, 1], title="Translated Pattern")
-        scatter!(ax3, xs_green, zeros(length(xs_green)), color=:green, markersize=10)
+        Makie.scatter!(ax3, xs_green, zeros(length(xs_green)), color=:green, markersize=10)
         limits!(ax3, x_lim..., -1, 1)
 
         return fig
@@ -138,21 +145,21 @@ function plot_mtp(
         xs_all = [point[1] for point in D]
         ys_all = [point[2] for point in D]
         ax1 = Axis(fig[1, 1], title="All Points")
-        scatter!(ax1, xs_all, ys_all, markersize=10)
+        Makie.scatter!(ax1, xs_all, ys_all, markersize=10)
         limits!(ax1, x_lim..., y_lim...)
 
         # Pattern
         xs_red = [point[1] for point in pattern]
         ys_red = [point[2] for point in pattern]
         ax2 = Axis(fig[2, 1], title="MTP")
-        scatter!(ax2, xs_red, ys_red, color=:red, markersize=10)
+        Makie.scatter!(ax2, xs_red, ys_red, color=:red, markersize=10)
         limits!(ax2, x_lim..., y_lim...)
 
         # Translated pattern
         xs_green = [point[1] for point in tralated_pattern]
         ys_green = [point[2] for point in tralated_pattern]
         ax3 = Axis(fig[3, 1], title="Translated Pattern")
-        scatter!(ax3, xs_green, ys_green, color=:green, markersize=10)
+        Makie.scatter!(ax3, xs_green, ys_green, color=:green, markersize=10)
         limits!(ax3, x_lim..., y_lim...)
 
         return fig
@@ -181,7 +188,7 @@ function plot_mtp(
         ys_all = [point[2] for point in D]
         zs_all = [point[3] for point in D]
         ax1 = Axis3(fig[1, 1], title="All Points")
-        scatter!(ax1, xs_all, zs_all, ys_all, markersize=10)
+        Makie.scatter!(ax1, xs_all, zs_all, ys_all, markersize=10)
         limits!(ax1, x_lim..., z_lim..., y_lim...)
 
         # Pattern
@@ -189,7 +196,7 @@ function plot_mtp(
         ys_red = [point[2] for point in pattern]
         zs_red = [point[3] for point in pattern]
         ax2 = Axis3(fig[1, 2], title="MTP")
-        scatter!(ax2, xs_red, zs_red, ys_red, color=:red, markersize=10)
+        Makie.scatter!(ax2, xs_red, zs_red, ys_red, color=:red, markersize=10)
         limits!(ax2, x_lim..., z_lim..., y_lim...)
 
         # Translated pattern
@@ -197,8 +204,15 @@ function plot_mtp(
         ys_green = [point[2] for point in tralated_pattern]
         zs_green = [point[3] for point in tralated_pattern]
         ax3 = Axis3(fig[1, 3], title="Translated Pattern")
-        scatter!(ax3, xs_green, zs_green, ys_green, color=:green, markersize=10)
+        Makie.scatter!(ax3, xs_green, zs_green, ys_green, color=:green, markersize=10)
         limits!(ax3, x_lim..., z_lim..., y_lim...)
         return fig
     end
+end
+
+function plot_mtp(
+        track::AbstractTrack,
+        mtp::Tuple{CartesianIndex{2}, Vector{CartesianIndex{2}}}
+    )
+    plot_mtp(findall(!iszero, track.pianoroll), mtp)
 end
