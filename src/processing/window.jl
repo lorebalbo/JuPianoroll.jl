@@ -1,27 +1,27 @@
 """
-    movingwindow(
-        pianoroll::AbstractMatrix{Integer};
-        resolution::Integer = 4,
-        lookback_beats::Integer = 1,
-        octaves_vision::Integer = 1,
-        unsupervised::Bool = false,
-        dead_silence::Bool = false,
-        rhythm::Bool = false
-    )
+	movingwindow(pianoroll::AbstractMatrix{<:Integer};
+	             resolution::Integer = 4,
+	             lookback_beats::Integer = 1,
+	             octaves_vision::Integer = 1,
+	             unsupervised::Bool = false,
+	             dead_silence::Bool = false,
+	             rhythm::Bool = false)
 
-Perform a moving window on a pianoroll matrix where the columns are the pitches and rows are the timesteps.
+Applies a sliding window transformation to a pianoroll matrix, extracting temporal-spatial
+feature instances with configurable lookback beats, pitch range, and optional rhythm
+metadata for machine learning tasks.
 
 # Arguments
-- `pianoroll::AbstractMatrix{Integer}`: the pianoroll matrix.
-- `resolution::Integer = 4`: the desired number of time steps in a beat (quarter note).
-- `lookback_beats::Integer = 1`: the number of beats that compose an instance.
-- `octaves_vision::Integer = 1`: The number of octaves that compose an instance.
-- `unsupervised::Bool = false`: whether to return the instances without the labels or not.
-- `dead_silence::Bool = false`: whether to add dead silence at the beginning of the pianoroll or not. If set to true, the pianoroll will be padded with fours at the beginning.
-- `rhythm::Bool = false`: whether to include rhythm information in the instances or not.
+- `pianoroll::AbstractMatrix{<:Integer}`: Input pianoroll matrix with rows as timesteps and columns as pitches.
+- `resolution::Integer`: Number of timesteps per beat (quarter note).
+- `lookback_beats::Integer`: Number of beats included in each instance window.
+- `octaves_vision::Integer`: Number of octaves visible on each side of target pitch.
+- `unsupervised::Bool`: Whether to exclude labels from instances.
+- `dead_silence::Bool`: Whether to prepend silence padding at the pianoroll start.
+- `rhythm::Bool`: Whether to include beat, bar, and normalized beat position features.
 
 # Returns
-- `Vector{Vector{Vector{Int}}}`: A vector of instances where each instance is a vector of feature vectors.
+- `Vector{Vector{Vector{Int}}}`: Collection of instances, each containing feature vectors representing windowed pianoroll data.
 """
 function movingwindow(
         pianoroll::AbstractMatrix{<:Integer};

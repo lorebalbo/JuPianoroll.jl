@@ -1,5 +1,21 @@
 using Makie
 
+"""
+	sia(D::Vector{CartesianIndex{N}},
+	    min_pattern_size::Integer = 2
+    )::Vector{Tuple{CartesianIndex{N}, Vector{CartesianIndex{N}}}} where N
+
+Computes maximal translatable patterns from a dataset of multidimensional points using the
+Structure Induction Algorithm. The function identifies repeated geometric patterns by
+analyzing translation vectors between points and returns patterns sorted by size.
+
+# Arguments
+- `D::Vector{CartesianIndex{N}}`: Input dataset of N-dimensional Cartesian points to analyze for patterns.
+- `min_pattern_size::Integer`: Minimum number of points required for a pattern to be included in results.
+
+# Returns
+- `Vector{Tuple{CartesianIndex{N}, Vector{CartesianIndex{N}}}}`: Maximal translatable patterns as translation vector and point list pairs.
+"""
 function sia(
         D::Vector{CartesianIndex{N}},
         min_pattern_size::Integer = 2
@@ -48,6 +64,22 @@ function sia(
     return MTPs
 end
 
+"""
+	plot_mtp(D::Vector{CartesianIndex{N}},
+	         mtp::Tuple{CartesianIndex{N}, Vector{CartesianIndex{N}}}
+    ) where N
+
+Visualizes a maximal translatable pattern alongside all dataset points and its translated
+occurrence using Makie plotting. The function creates dimension-specific visualizations with
+separate panels showing original points, the pattern, and translated pattern.
+
+# Arguments
+- `D::Vector{CartesianIndex{N}}`: Complete dataset of N-dimensional points providing visualization context.
+- `mtp::Tuple{CartesianIndex{N}, Vector{CartesianIndex{N}}}`: Maximal translatable pattern as translation vector and point list pair.
+
+# Returns
+- `Figure`: Makie figure containing three visualization panels for pattern analysis.
+"""
 function plot_mtp(
         D::Vector{CartesianIndex{N}},
         mtp::Tuple{CartesianIndex{N}, Vector{CartesianIndex{N}}}

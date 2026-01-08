@@ -1,15 +1,17 @@
 """
-    key_distance(key1::Key, key2::Key)::Integer
+	key_distance(key1::Key, key2::Key)::Integer
 
-Calculates the shortest distance in semitones between two keys.
-Handles both major and minor modes using relative scale conversion.
+Calculates the shortest semitone distance between two keys on a chromatic circle by
+converting minor keys to relative majors and computing the minimal directional distance.
+Handles circular wrapping to ensure distance values range from negative six to positive
+six semitones.
 
 # Arguments
-- `key1::Key`: the first key
-- `key2::Key`: the second key
+- `key1::Key`: First musical key with tonic and mode.
+- `key2::Key`: Second musical key with tonic and mode.
 
 # Returns
-- The shortest distance in semitones between the two keys.
+- `Integer`: Shortest semitone distance from key1 to key2.
 """
 function key_distance(key1::Key, key2::Key)::Integer
     # Convert tonics to integers (0-11)
@@ -45,15 +47,17 @@ function key_distance(key1::Key, key2::Key)::Integer
 end
 
 """
-    _notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
+	_notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
 
-Given a musical key, returns the notes in that scale as a vector of integers (MIDI numbers).
+Extracts the pitch classes belonging to a musical key by computing scale intervals from the
+tonic, using major or minor mode patterns. Returns a sorted set of pitch class integers
+modulo twelve, representing the chromatic scale positions.
 
 # Arguments
-- `Key::AbstractKey`: the musical key (tonic and mode).
+- `Key::AbstractKey`: Musical key containing tonic and mode information.
 
 # Returns
-- `AbstractVector{<:Integer}`: a vector of integers (MIDI numbers)
+- `AbstractVector{<:Integer}`: Sorted pitch class integers from zero to eleven.
 """
 function _notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
     tonic = Int(Key.tonic)
@@ -70,22 +74,35 @@ function _notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
 end
 
 """
-    get_pitches_in_scale(
-        scale::AbstractString
-    )::AbstractVector{<:Integer}
+	get_pitches_in_scale(scale::AbstractString)::AbstractVector{<:Integer}
 
-Given a scale in the format "Cmaj" or "Dmin", returns the pitches in that scale as a vector of integers.
+Parses a scale name string into a key structure and delegates to the key-based method to
+retrieve all MIDI pitches belonging to that scale across the full MIDI range.
+Serves as a convenience wrapper for string inputs.
 
 # Arguments
-- `scale::AbstractString`: the name of the scale (e.g., "Cmaj", "Dmin").
+- `scale::AbstractString`: Scale name in standard notation like "Cmaj" or "Dmin".
 
 # Returns
-- `AbstractVector{<:Integer}`: a vector of integers (MIDI numbers) representing the pitches in the scale.
+- `AbstractVector{<:Integer}`: MIDI pitch numbers belonging to the specified scale.
 """
 function get_pitches_in_scale(scale::AbstractString)::AbstractVector{<:Integer}
     parsekey(scale) |> get_pitches_in_scale
 end
 
+"""
+	get_pitches_in_scale(scale::AbstractKey)::AbstractVector{<:Integer}
+
+Generates all MIDI pitch numbers belonging to a musical key by expanding pitch classes
+across eleven octaves and filtering values below the MIDI maximum. Constructs a matrix
+mapping octaves to pitch classes and extracts relevant columns.
+
+# Arguments
+- `scale::AbstractKey`: Musical key defining tonic and mode.
+
+# Returns
+- `AbstractVector{<:Integer}`: MIDI pitch numbers in the scale under 128.
+"""
 function get_pitches_in_scale(
         scale::AbstractKey
     )::AbstractVector{<:Integer}
@@ -96,19 +113,19 @@ function get_pitches_in_scale(
 end
 
 """
-    get_pitches_range(
-        multitrack::AbstractMultitrack;
-        force_to_octave::Bool = false
-    )::Tuple{<:Integer, <:Integer}
+	get_pitches_range(multitrack::AbstractMultitrack;
+	                  force_to_octave::Bool = false)::Tuple{<:Integer, <:Integer}
 
-Get the upper bound and lower bound pitches used in a multitrack's pianorolls.
+Computes the overall pitch range across all tracks in a multitrack by aggregating individual
+track ranges and returning the minimum lower bound and maximum upper bound.
+Returns nothing values if no pitches are present in any track.
 
 # Arguments
-- `multitrack::AbstractMultitrack`: The multitrack containing tracks with pianorolls.
-- `force_to_octave::Bool`: If true, forces the range to align with the tonic's octave.
+- `multitrack::AbstractMultitrack`: Multitrack containing multiple tracks with pianoroll data.
+- `force_to_octave::Bool`: Whether to snap range boundaries to tonic octaves.
 
 # Returns
-- `Tuple{<:Integer, <:Integer}`: A tuple containing the lower and upper bound pitches.
+- `Tuple{<:Integer, <:Integer}`: Lower and upper pitch bounds across all tracks.
 """
 function get_pitches_range(
         multitrack::AbstractMultitrack;
@@ -134,19 +151,21 @@ function get_pitches_range(
 end
 
 """
-    get_pitches_range(
-        track::AbstractTrack;
-        force_to_octave::Bool = false
-    )::Tuple{<:Integer, <:Integer}
+	get_pitches_range(track::AbstractTrack;
+	                  key::Union{<:AbstractKey, <:AbstractString, <:Nothing} = nothing,
+	                  force_to_octave::Bool = false)::Tuple{Union{<:Integer, Nothing}, Union{<:Integer, Nothing}}
 
-Get the upper bound and lower bound pitches used in a track's pianoroll.
+Determines the lowest and highest active pitches in a track's pianoroll by scanning column
+indices for nonzero values. Optionally snaps boundaries to tonic octave positions when
+force_to_octave is enabled, requiring a valid key parameter.
 
 # Arguments
-- `track::AbstractTrack`: The track containing the pianoroll.
-- `force_to_octave::Bool`: If true, forces the range to align with the tonic's octave.
+- `track::AbstractTrack`: Track containing pianoroll matrix data.
+- `key::Union{<:AbstractKey, <:AbstractString, <:Nothing}`: Optional key for octave alignment.
+- `force_to_octave::Bool`: Whether to snap boundaries to tonic octaves.
 
 # Returns
-- `Tuple{<:Integer, <:Integer}`: A tuple containing the lower and upper bound pitches.
+- `Tuple{Union{<:Integer, Nothing}, Union{<:Integer, Nothing}}`: Lower and upper pitch bounds or nothing values.
 """
 function get_pitches_range(
         track::AbstractTrack;

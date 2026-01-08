@@ -5,6 +5,20 @@ struct SIATECResult
     translators::Vector{CartesianIndex{2}}
 end
 
+"""
+	siatec(D::Vector{CartesianIndex{N}}) where N
+
+Computes translational equivalence classes and maximal translatable patterns from a sorted
+dataset of multidimensional points using the SIATEC algorithm.
+The function identifies repeated structural patterns by analyzing vector differences,
+returning discovered patterns with their translation vectors.
+
+# Arguments
+- `D::Vector{CartesianIndex{N}}`: Input dataset of N-dimensional Cartesian points to analyze for patterns.
+
+# Returns
+- `Tuple{Vector{SIATECResult}, Vector{Tuple{Int, Vector{Any}}}, Vector{Vector{Tuple{CartesianIndex, Int}}}}`: Tuple containing SIATEC results with patterns and translators, sorted pattern metadata, and vector table.
+"""
 function siatec(
         D::Vector{CartesianIndex{N}}
     ) where N
@@ -116,6 +130,21 @@ function siatec(
     return results, Y, V
 end
 
+"""
+	plot_siatec_result(D::Vector{CartesianIndex{2}},
+	                   result::SIATECResult;
+	                   filename::Union{String, Nothing} = nothing)
+
+Generates visualization plots for a SIATEC pattern discovery result, displaying the dataset with highlighted patterns and their translations. Creates multiple scatter plots showing the original dataset, identified pattern, and up to four translated pattern instances with optional file export.
+
+# Arguments
+- `D::Vector{CartesianIndex{2}}`: Original two-dimensional dataset of Cartesian points to visualize.
+- `result::SIATECResult`: SIATEC result containing the discovered pattern and translator vectors.
+- `filename::Union{String, Nothing}`: Optional output filename for saving the generated figure and individual plots.
+
+# Returns
+- `Figure`: Makie figure object containing all generated visualization plots arranged vertically.
+"""
 function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; filename::Union{String, Nothing} = nothing)
     # Converti il pattern da Vector{Tuple{Int, Int}} a Vector{CartesianIndex{2}}
     pattern_cart = map(CartesianIndex, result.pattern)

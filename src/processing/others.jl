@@ -1,13 +1,15 @@
 """
-    attack_only(pianoroll::Matrix)::Matrix
+	attack_only(pianoroll::Matrix)::Matrix
 
-Keep only the attack phase of each note in the pianoroll.
+Extracts attack phases from each note by identifying onset positions where note transitions
+from inactive to active state. Modifies the input matrix in-place by setting non-attack
+frames to zero while preserving only the initial activation timesteps.
 
 # Arguments
-- `pianoroll::Matrix`: The pianoroll matrix to process.
+- `pianoroll::Matrix`: Input pianoroll matrix where columns represent time and rows represent pitches, modified in-place.
 
 # Returns
-- `Matrix`: The processed pianoroll matrix with only the attack phases preserved.
+- `Matrix`: Modified pianoroll matrix containing only note attack phases with onset positions marked as active.
 """
 function attack_only(pianoroll::Matrix)::Matrix
     for j in axes(pianoroll, 2)
@@ -24,17 +26,17 @@ function attack_only(pianoroll::Matrix)::Matrix
 end
 
 """
-    attack_only(multitrack::Multitrack)::Multitrack
+	attack_only(multitrack::Multitrack)::Multitrack
 
-Keep only the attack phase of each note in the pianoroll of each track of a Multitrack object.
-
-See `attack_only(pianoroll::Matrix)` for more details.
+Applies attack phase extraction to pianoroll matrices of all tracks within a multitrack
+object by iterating through each track and processing its pianoroll.
+Modifies track pianorolls in-place to retain only note onset positions.
 
 # Arguments
-- `multitrack::Multitrack`: The multitrack object to process.
+- `multitrack::Multitrack`: Multitrack object containing multiple tracks, each with a pianoroll matrix to be processed.
 
 # Returns
-- `Multitrack`: The processed multitrack object with only the attack phases preserved.
+- `Multitrack`: Modified multitrack object where all track pianorolls contain only attack phases of notes.
 """
 function attack_only(multitrack::Multitrack)::Multitrack
     for track in multitrack.tracks
@@ -45,16 +47,17 @@ function attack_only(multitrack::Multitrack)::Multitrack
 end
 
 """
-    mark_on_going(pianoroll::Matrix{<:Integer})
+	mark_on_going(pianoroll::AbstractMatrix{<:Integer})::AbstractMatrix{<:Integer}
 
-Given a pianoroll binary matrix, differentiates the time steps where a note starts to play
-from the time steps where a note is already playing.
+Differentiates note onsets from sustained notes by marking continuation frames with a
+distinct value. Creates a deep copy where frames matching the previous frame are marked as
+ongoing, enabling distinction between attack and sustain phases.
 
 # Arguments
-- `pianoroll::Matrix{<:Integer}`: a binary matrix where the rows are the time steps and the columns are the pitches. The values can be either 0 (note not playing) or 1 (note playing)
+- `pianoroll::AbstractMatrix{<:Integer}`: Binary matrix with rows as time steps and columns as pitches, containing only zeros or ones.
 
 # Returns
-- `Matrix{<:Integer}`: a matrix where the values are 0 (note not playing), 1 (note playing) or 2 (note ongoing). A note is considered ongoing if it is playing at the current time step and at the previous time step.
+- `AbstractMatrix{<:Integer}`: Matrix with values zero for inactive, one for onset, and two for ongoing sustained notes.
 """
 function mark_on_going(
         pianoroll::AbstractMatrix{<:Integer}
@@ -80,16 +83,17 @@ function mark_on_going(
 end
 
 """
-    get_rhythm(pianoroll::Matrix)::Vector{Int}
+	get_rhythm(pianoroll::Matrix)::Vector{Int}
 
-Call `attack_only` on the pianoroll and transform each row into a scalar
-(1 if there is at least one 1 in the row, 0 otherwise).
+Extracts rhythmic information by computing attack phases and collapsing each timestep into
+a binary indicator of activity. Copies the input pianoroll, applies attack-only
+transformation, then reduces each row to presence or absence of active notes.
 
 # Arguments
-- `pianoroll::Matrix`: Input pianoroll.
+- `pianoroll::Matrix`: Input pianoroll matrix containing note activation data across time and pitch dimensions.
 
 # Returns
-- `Vector{Int}`: Rhythm vector.
+- `Vector{Int}`: Binary rhythm vector indicating presence of note onsets at each timestep.
 """
 function get_rhythm(pianoroll::Matrix)::Vector{Int}
     pr = copy(pianoroll)

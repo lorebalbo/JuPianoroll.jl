@@ -1,14 +1,15 @@
 """
-    is_monophonic(pianoroll::AbstractMatrix)::Bool
+	is_monophonic(track::AbstractTrack)::Bool
 
-Checks if the given pianoroll Abstractmatrix represents a monophonic sequence (only one note is
-played at a time)
+Determines whether a track contains only monophonic content by analyzing the attack-only
+pianoroll representation. Each time step is examined to ensure no more than two
+simultaneous non-zero elements exist, indicating at most one note plays at any given moment.
 
 # Arguments
-- `pianoroll::AbstractMatrix`: A pianoroll matrix to check whether is monophonic.
+- `track::AbstractTrack`: Track object containing pianoroll data to be analyzed for monophonic properties.
 
 # Returns
-- `Bool`: Returns `true` if the pianoroll is monophonic, otherwise returns `false`.
+- `Bool`: True if the track is monophonic, false otherwise.
 """
 function is_monophonic(track::AbstractTrack)::Bool
     # Keep only the attack phase of each note in the pianoroll
@@ -25,16 +26,17 @@ function is_monophonic(track::AbstractTrack)::Bool
 end
 
 """
-    is_polyphonic(pianoroll::AbstractMatrix)::Bool
+	is_polyphonic(track::AbstractTrack)::Bool
 
-Checks if the given pianoroll Abstractmatrix represents a polyphonic sequence (more than one note is
-played simultaneously)
+Determines whether a track contains polyphonic content by negating the result of the
+monophonic check. Returns true when multiple notes play simultaneously at any time step
+within the track's pianoroll representation.
 
 # Arguments
-- `pianoroll::AbstractMatrix`: A pianoroll Abstractmatrix to check whether is polyphonic.
+- `track::AbstractTrack`: Track object containing pianoroll data to be analyzed for polyphonic properties.
 
 # Returns
-- `Bool`: Returns `true` if the pianoroll is polyphonic, otherwise returns `false`.
+- `Bool`: True if the track is polyphonic, false otherwise.
 """
 function is_polyphonic(track::AbstractTrack)::Bool
     return !is_monophonic(track)

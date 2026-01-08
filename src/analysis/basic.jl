@@ -1,19 +1,20 @@
 """
-    tracks_name(multitracks::AbstractVector{<:AbstractMultitrack};
-        plot::Bool = true,
-        top_n::Union{Nothing, Int} = nothing
+	tracks_name(multitracks::AbstractVector{<:AbstractMultitrack};
+	            plot::Bool = true,
+	            top_n::Union{Nothing, Int} = nothing
     )
 
-Analyze the most common tracks across all the multitracks and optionally plot them as a bar chart.
+Analyzes track name frequency across multiple multitrack objects and returns sorted results
+by descending count. Optionally generates a bar chart visualization of track name
+distribution and limits results to the top-n most frequent tracks when specified.
 
 # Arguments
-- `multitracks::AbstractVector{<:AbstractMultitrack}`: vector of multitrack objects to analyze.
-- `plot::Bool = true`: whether to plot the results as a bar chart.
-- `top_n::Union{Nothing, Int} = nothing`: if specified, only show/return the top n most common tracks.
+- `multitracks::AbstractVector{<:AbstractMultitrack}`: Vector of multitrack objects to analyze for track names.
+- `plot::Bool`: Whether to display bar chart visualization of the track name distribution.
+- `top_n::Union{Nothing, Int}`: Maximum number of most frequent tracks to return; unlimited if nothing.
 
 # Returns
-- `(vals, counts)`: a tuple containing the track names and their counts.
-- If `plot=true`, also displays a Makie bar chart.
+- `Tuple{Vector, Vector{Int}}`: Tuple containing track names and their occurrence counts, sorted by descending frequency.
 """
 function tracks_name(multitracks::AbstractVector{<:AbstractMultitrack};
         plot::Bool = true,
@@ -57,15 +58,15 @@ function tracks_name(multitracks::AbstractVector{<:AbstractMultitrack};
 end
 
 """
-    n_tracks(multitracks::AbstractVector{<:AbstractMultitrack})::AbstractVector{<:Integer}
+	n_tracks(multitracks::AbstractVector{<:AbstractMultitrack})::AbstractVector{<:Integer}
 
-Get the unique number of tracks across a vector of multitrack objects.
+Extracts all distinct track count values observed across a collection of multitrack objects and returns them as unique integers. The function counts tracks in each multitrack object and removes duplicate values from the result.
 
 # Arguments
-- `multitracks::AbstractVector{<:AbstractMultitrack}`: vector of multitrack objects to analyze.
+- `multitracks::AbstractVector{<:AbstractMultitrack}`: Vector of multitrack objects to extract track counts from.
 
 # Returns
-- `AbstractVector{<:Integer}`: a vector containing the unique number of tracks.
+- `AbstractVector{<:Integer}`: Unique track count values found across all multitrack objects.
 """
 function n_tracks(multitracks::AbstractVector{<:AbstractMultitrack})::AbstractVector{<:Integer}
     unique([length(mt.tracks) for mt in multitracks])

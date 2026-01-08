@@ -1,18 +1,16 @@
 """
-    get_files(path::AbstractString; recursive::Bool = false)
+	get_files(path::AbstractString; recursive::Bool = false)
 
-Return all MIDI files (`.mid`, `.midi`) in the given `path`.
-
-If `path` is a directory, returns all MIDI files in that directory. If `recursive` is set to `true`, the directory is searched recursively.
-
-If `path` is a file, checks whether the file exists and returns its path.
+Retrieves all MIDI files with `.mid` or `.midi` extensions from a specified directory or
+validates and returns a single file path. When applied to directories, supports optional
+recursive traversal of subdirectories to collect matching files.
 
 # Arguments
-- `path::AbstractString`: Path to a file or directory.
-- `recursive::Bool = false`: Whether to search subdirectories recursively (if `path` is a directory).
+- `path::AbstractString`: File or directory path to search for MIDI files.
+- `recursive::Bool`: Whether to search subdirectories recursively; applicable only to directories.
 
 # Returns
-- A vector of file paths matching MIDI file extensions (`.mid`, `.midi`).
+- `Vector{String}`: Array of file paths matching MIDI file extensions.
 """
 function get_files(
         path::AbstractString;

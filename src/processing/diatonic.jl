@@ -1,18 +1,15 @@
 """
-    diatonic!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
+	diatonic!(multitrack::AbstractMultitrack)::AbstractMultitrack
 
-Filter in-place all the pianoroll matrices of each track in a multitrack to keep only the pitches
-that belong to the specified key/scale.
-
-This function modifies each track's pianoroll by setting to zero all columns (pitches) that are not
-in the specified key. The pitches to keep are determined by the diatonic scale of the given key.
+Filters in-place each track's pianoroll to retain only pitches belonging to the multitrack's
+assigned key. Modifies track pianoroll matrices by selecting columns corresponding to
+diatonic scale pitches, discarding all non-diatonic pitch data without creating copies.
 
 # Arguments
-- `multitrack::AbstractMultitrack`: The multitrack object containing tracks with pianorolls to be filtered (modified in-place).
-- `key::AbstractKey`: The musical key (tonic and mode) defining which pitches to keep.
+- `multitrack::AbstractMultitrack`: Multitrack object whose tracks will be filtered in-place based on its key property.
 
 # Returns
-- `AbstractMultitrack`: The modified multitrack object with filtered pianorolls (same as input).
+- `AbstractMultitrack`: The same multitrack instance with modified track pianorolls containing only diatonic pitches.
 """
 function diatonic!(multitrack::AbstractMultitrack)::AbstractMultitrack
     pitches_to_keep = get_pitches_in_scale(multitrack.key)
@@ -25,20 +22,17 @@ function diatonic!(multitrack::AbstractMultitrack)::AbstractMultitrack
 end
 
 """
-    diatonic(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
+	diatonic(multitrack::AbstractMultitrack)::AbstractMultitrack
 
-Creates a copy of the multitrack and filters all the pianoroll matrices of each track to keep only
-the pitches that belong to the specified key/scale.
-
-This function returns a new multitrack where each track's pianoroll has been modified by setting to
-zero all columns (pitches) that are not in the specified key. The original multitrack is not modified.
+Creates a deep copy of the multitrack and filters each track's pianoroll to retain only
+pitches belonging to the multitrack's assigned key. Returns a new multitrack instance with
+filtered pianorolls while preserving the original multitrack unchanged.
 
 # Arguments
-- `multitrack::AbstractMultitrack`: The multitrack object containing tracks with pianorolls to be filtered.
-- `key::AbstractKey`: The musical key (tonic and mode) defining which pitches to keep.
+- `multitrack::AbstractMultitrack`: Multitrack object to be copied and filtered based on its key property.
 
 # Returns
-- `AbstractMultitrack`: A new multitrack object with filtered pianorolls (the original is not modified).
+- `AbstractMultitrack`: New multitrack instance with track pianorolls containing only diatonic pitches from the assigned key.
 """
 function diatonic(multitrack::AbstractMultitrack)::AbstractMultitrack
     return diatonic!(deepcopy(multitrack))

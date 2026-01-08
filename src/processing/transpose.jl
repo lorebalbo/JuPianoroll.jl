@@ -1,19 +1,15 @@
 """
-    _transpose(pianoroll::AbstractMatrix, semitones::Integer)::AbstractMatrix
+	_transpose(pianoroll::AbstractMatrix, semitones::Integer)::AbstractMatrix
 
-Transpose a pianoroll matrix by the specified amount of semitones.
-
-The transposition is obtained by shifting the columns of pianoroll matrix by `semitones` positions.
+Transposes a pianoroll matrix by shifting columns according to the specified semitone offset.
+Positive values shift right, negative values shift left, and zero returns a copy without modification.
 
 # Arguments
-- `pianoroll::AbstractMatrix`: The input pianoroll matrix to shift.
-- `semitones::Integer`: The number of columns to shift.
-    - If `semitones > 0`, shifts columns to the right by `semitones` positions, filling with zeros on the left.
-    - If `semitones < 0`, shifts columns to the left by `abs(semitones)` positions, filling with zeros on the right.
-    - If `semitones == 0`, returns a copy of `pianoroll` with no shift.
+- `pianoroll::AbstractMatrix`: Input pianoroll matrix to be transposed.
+- `semitones::Integer`: Number of semitones to shift; positive shifts right, negative shifts left.
 
 # Returns
-- A new matrix of the same size as `pianoroll`, with columns shifted as specified.
+- `AbstractMatrix`: New matrix with columns shifted by the specified semitone offset.
 """
 function _transpose(pianoroll::AbstractMatrix, semitones::Integer)::AbstractMatrix
     rows, cols = size(pianoroll)
@@ -42,19 +38,18 @@ function _transpose(pianoroll::AbstractMatrix, semitones::Integer)::AbstractMatr
 end
 
 """
-    transpose!(multitrack::AbstractMultitrack, semitones::Integer)::AbstractMultitrack
+	transpose!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
 
-Transpose in-place all the pianoroll matrix of each track of an AbstractMultitrack object by the specified
-amount of semitones.
-
-See `_transpose(pianoroll::AbstractMatrix, semitones::Integer)` for more details.
+Transposes all pianorolls in a multitrack object in-place to match the specified musical key.
+Computes semitone distance from the current key and applies transposition to each track.
+Errors if no key information exists.
 
 # Arguments
-- `multitrack::AbstractMultitrack`: The multitrack object containing tracks with pianorolls to be transposed (modified in-place).
-- `semitones::Integer`: The number of semitones to transpose the pianorolls by.
+- `multitrack::AbstractMultitrack`: Multitrack object to be transposed in-place.
+- `key::AbstractKey`: Target musical key for transposition.
 
 # Returns
-- `AbstractMultitrack`: The modified multitrack object with transposed pianorolls (same as input).
+- `AbstractMultitrack`: The modified multitrack object with transposed pianorolls.
 """
 function transpose!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
     if !isnothing(multitrack.key)
@@ -78,19 +73,18 @@ function transpose!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractM
 end
 
 """
-    transpose(multitrack::AbstractMultitrack, semitones::Integer)::AbstractMultitrack
+	transpose(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
 
-Creates a copy of the multitrack and transposes all the pianoroll matrix of each track by the specified
-amount of semitones.
-
-See `_transpose(pianoroll::AbstractMatrix, semitones::Integer)` for more details.
+Creates a deep copy of the multitrack object and transposes all pianorolls to the specified
+musical key. The original multitrack remains unmodified while the copy undergoes
+transposition via the in-place variant.
 
 # Arguments
-- `multitrack::AbstractMultitrack`: The multitrack object containing tracks with pianorolls to be transposed.
-- `semitones::Integer`: The number of semitones to transpose the pianorolls by.
+- `multitrack::AbstractMultitrack`: Multitrack object to be transposed non-destructively.
+- `key::AbstractKey`: Target musical key for transposition.
 
 # Returns
-- `AbstractMultitrack`: A new multitrack object with transposed pianorolls (the original is not modified).
+- `AbstractMultitrack`: New multitrack object with transposed pianorolls.
 """
 function transpose(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
     return transpose!(deepcopy(multitrack), key)
