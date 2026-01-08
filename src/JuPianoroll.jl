@@ -31,6 +31,7 @@ export movingwindow
 export diatonic, diatonic!
 export is_monophonic, is_polyphonic
 export mark_on_going
+export merge_pianorolls!
 
 # Utils
 export key_distance
