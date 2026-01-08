@@ -47,22 +47,22 @@ function key_distance(key1::Key, key2::Key)::Integer
 end
 
 """
-	_notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
+	_notes_in_scale(key::AbstractKey)::AbstractVector{<:Integer}
 
-Extracts the pitch classes belonging to a musical key by computing scale intervals from the
-tonic, using major or minor mode patterns. Returns a sorted set of pitch class integers
-modulo twelve, representing the chromatic scale positions.
+Extracts the pitch classes belonging to a musical key by computing scale
+intervals from the tonic, using major or minor mode patterns, returning a
+sorted vector of integers representing chromatic scale positions modulo twelve.
 
 # Arguments
-- `Key::AbstractKey`: Musical key containing tonic and mode information.
+- `key::AbstractKey`: Musical key containing tonic and mode information.
 
 # Returns
 - `AbstractVector{<:Integer}`: Sorted pitch class integers from zero to eleven.
 """
-function _notes_in_scale(Key::AbstractKey)::AbstractVector{<:Integer}
-    tonic = Int(Key.tonic)
+function _notes_in_scale(key::AbstractKey)::AbstractVector{<:Integer}
+    tonic = Int(key.tonic)
 
-    intervals = Key.mode == JuPianoroll.Major ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 10]
+    intervals = key.mode == JuPianoroll.Major ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 10]
 
     notes = Set{Int}()
 
@@ -184,7 +184,7 @@ function get_pitches_range(
         return nothing, nothing
     else
         lower_bound = findfirst(!iszero, cols)
-        upper_bound = findfirst(!iszero, reverse(cols))
+        upper_bound = findlast(!iszero, cols)
 
         if force_to_octave
             tonic  = Int(key) + 1
