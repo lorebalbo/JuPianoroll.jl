@@ -9,40 +9,46 @@ first timestep of each note while discarding sustained values.
 - `pianoroll::AbstractMatrix`: Input pianoroll matrix where rows represent pitches and columns represent timesteps.
 
 # Returns
-- `AbstractMatrix`: Modified pianoroll matrix containing only attack phase markers for each note onset.
+- `AbstractMatrix`: New pianoroll matrix containing only attack phase markers for each note onset.
 """
 function attack_only(pianoroll::AbstractMatrix)::AbstractMatrix
-    for j in axes(pianoroll, 2)
-        col = pianoroll[:, j]
+    result = copy(pianoroll)
+    for j in axes(result, 2)
+        col = result[:, j]
         if any(col .== 1)
             v = zeros(Int, length(col))
             idxs = findall(diff(col) .== 1) .+ 1
             v[idxs] .= 1
-            pianoroll[:, j] .= v
+
+            if col[1] == 1
+                v[1] = 1
+            end
+
+            result[:, j] .= v
         end
     end
 
-    return pianoroll
+    return result
 end
 
 """
 	attack_only(multitrack::AbstractMultitrack)::AbstractMultitrack
 
 Applies attack-only processing to all tracks within a multitrack object by iterating through
-each track and extracting note onset positions.
-The function modifies each track's pianoroll in-place to retain only attack phase
-information across all tracks.
+each track and extracting note onset positions. Returns a new multitrack object without
+modifying the original.
 
 # Arguments
 - `multitrack::AbstractMultitrack`: Multitrack object containing multiple tracks with pianoroll data to process.
 
 # Returns
-- `AbstractMultitrack`: Modified multitrack object with attack-only pianorolls applied to all contained tracks.
+- `AbstractMultitrack`: New multitrack object with attack-only pianorolls applied to all contained tracks.
 """
 function attack_only(multitrack::AbstractMultitrack)::AbstractMultitrack
-    for track in multitrack.tracks
+    result = deepcopy(multitrack)
+    for track in result.tracks
         track.pianoroll = attack_only(track.pianoroll)
     end
 
-    return multitrack
+    return result
 end
