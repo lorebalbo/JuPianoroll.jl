@@ -14,18 +14,14 @@ in the specified key. The pitches to keep are determined by the diatonic scale o
 # Returns
 - `AbstractMultitrack`: The modified multitrack object with filtered pianorolls (same as input).
 """
-function diatonic!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
-    pitches_to_keep = get_pitches_in_scale(key)
+function diatonic!(multitrack::AbstractMultitrack)::AbstractMultitrack
+    pitches_to_keep = get_pitches_in_scale(multitrack.key)
 
     for track in multitrack.tracks
         track.pianoroll = track.pianoroll[:, pitches_to_keep]
     end
 
     return multitrack
-end
-
-function diatonic!(multitrack::AbstractMultitrack, key::AbstractString)::AbstractMultitrack
-    return diatonic!(multitrack, parsekey(key))
 end
 
 """
@@ -44,10 +40,6 @@ zero all columns (pitches) that are not in the specified key. The original multi
 # Returns
 - `AbstractMultitrack`: A new multitrack object with filtered pianorolls (the original is not modified).
 """
-function diatonic(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
-    return diatonic!(deepcopy(multitrack), key)
-end
-
-function diatonic(multitrack::AbstractMultitrack, key::AbstractString)::AbstractMultitrack
-    return diatonic!(deepcopy(multitrack), parsekey(key))
+function diatonic(multitrack::AbstractMultitrack)::AbstractMultitrack
+    return diatonic!(deepcopy(multitrack))
 end

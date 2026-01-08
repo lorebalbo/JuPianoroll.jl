@@ -72,6 +72,8 @@ function transpose!(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractM
         track.pianoroll = _transpose(track.pianoroll, semitones)
     end
 
+    multitrack.key = key
+
     return multitrack
 end
 
@@ -90,6 +92,6 @@ See `_transpose(pianoroll::AbstractMatrix, semitones::Integer)` for more details
 # Returns
 - `AbstractMultitrack`: A new multitrack object with transposed pianorolls (the original is not modified).
 """
-function transpose(multitrack::AbstractMultitrack, semitones::Integer)::AbstractMultitrack
-    return transpose!(deepcopy(multitrack), semitones)
+function transpose(multitrack::AbstractMultitrack, key::AbstractKey)::AbstractMultitrack
+    return transpose!(deepcopy(multitrack), key)
 end

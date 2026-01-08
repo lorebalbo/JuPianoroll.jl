@@ -136,7 +136,7 @@ function _extract_pianoroll(
 end
 
 """
-    _parsekey(key::Union{<:AbstractString, <:Nothing})::Union{AbstractKey, Nothing}
+    parsekey(key::Union{<:AbstractString, <:Nothing})::Union{AbstractKey, Nothing}
 
 Parse a key string (e.g., "Cmaj", "A#min") into a Key object.
 If the input is `nothing`, returns `nothing`.
@@ -172,6 +172,7 @@ end
         path::AbstractString;
         resolution::Union{<:Integer, <:Nothing} = nothing,
         key::Union{<:AbstractKey, <:AbstractString, <:Nothing} = nothing
+        bpm::Union{<:Integer, <:Nothing} = nothing
     )::AbstractMultitrack
 
 Read a MIDI file from the specified path and convert it into a MultiTrack object.
@@ -180,6 +181,7 @@ Read a MIDI file from the specified path and convert it into a MultiTrack object
 - `path::AbstractString`: Path to the MIDI file.
 - `resolution::Union{<:Integer, <:Nothing}`: Desired time resolution (ticks (timesteps) per quarter note) for the piano roll. If `nothing`, uses the MIDI file's ticks per quarter note.
 - `key::Union{<:AbstractKey, <:AbstractString, <:Nothing}`: Key information.
+- `bpm::Union{<:Integer, <:Nothing}`: Tempo in beats per minute. If `nothing`, uses the tempo from the MIDI file.
 
 # Returns
 - `AbstractMultitrack`: MultiTrack object representing the MIDI file.
@@ -193,7 +195,7 @@ function read_midi(
     if key isa AbstractKey
         key_parsed = key
     else
-        key_parsed = _parsekey(key)
+        key_parsed = parsekey(key)
     end
 
     midi = MIDI.load(path)
@@ -239,3 +241,4 @@ function read_midi(
         key_parsed
     )
 end
+

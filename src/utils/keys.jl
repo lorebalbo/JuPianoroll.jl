@@ -90,7 +90,7 @@ function get_pitches_in_scale(
         scale::AbstractKey
     )::AbstractVector{<:Integer}
     notes = _notes_in_scale(scale)
-    matrix = [i + (j-1)*11 for i in 1:11, j in 1:12]
+    matrix = [j + (i-1)*12 for i in 1:11, j in 1:12]
 
     filter(x -> x < 128, matrix[:, notes .+ 1])
 end
@@ -119,8 +119,15 @@ function get_pitches_range(
 
     for track in multitrack.tracks
         lower_bound, upper_bound = get_pitches_range(track; key=multitrack.key, force_to_octave=force_to_octave)
-        push!(lower_bounds, lower_bound)
-        push!(upper_bounds, upper_bound)
+
+        if !isnothing(lower_bound) && !isnothing(upper_bound)
+            push!(lower_bounds, lower_bound)
+            push!(upper_bounds, upper_bound)
+        end
+    end
+
+    if isempty(lower_bounds) || isempty(upper_bounds)
+        return (nothing, nothing)
     end
 
     return (minimum(lower_bounds), maximum(upper_bounds))
@@ -145,8 +152,8 @@ function get_pitches_range(
         track::AbstractTrack;
         key::Union{<:AbstractKey, <:AbstractString, <:Nothing} = nothing,
         force_to_octave::Bool = false
-    )::Tuple{<:Integer, <:Integer}
-    @assert !(force_to_octave && isnothing(key)), "If force_to_octave is true, a key must be provided."
+    )::Tuple{Union{<:Integer, Nothing}, Union{<:Integer, Nothing}}
+    @assert !(force_to_octave && isnothing(key)) "If force_to_octave is true, a key must be provided."
 
     if isa(key, AbstractString)
         key = parsekey(key)
@@ -154,17 +161,21 @@ function get_pitches_range(
 
     cols = eachcol(track.pianoroll)
 
-    lower_bound = findall(!iszero, cols)
-    upper_bound = findall(!iszero, reverse(cols))
+    if isempty(findall(!iszero, track.pianoroll))
+        return nothing, nothing
+    else
+        lower_bound = findfirst(!iszero, cols)
+        upper_bound = findfirst(!iszero, reverse(cols))
 
-    if force_to_octave
-        tonic  = Int(key) + 1
-        tonics = [tonic + 12 * i for i in 0:11]
-        filter!(x -> 1 <= x <= 128, tonics)
+        if force_to_octave
+            tonic  = Int(key) + 1
+            tonics = [tonic + 12 * i for i in 0:11]
+            filter!(x -> 1 <= x <= 128, tonics)
 
-        upper_bound = findfirst(x -> x >= upper_bound, tonics)
-        lower_bound = findlast(x -> x <= lower_bound, tonics)
+            upper_bound = findfirst(x -> x >= upper_bound, tonics)
+            lower_bound = findlast(x -> x <= lower_bound, tonics)
+        end
+
+        return lower_bound, upper_bound
     end
-
-    return lower_bound, upper_bound
 end

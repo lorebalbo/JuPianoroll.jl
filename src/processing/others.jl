@@ -10,7 +10,7 @@ Keep only the attack phase of each note in the pianoroll.
 - `Matrix`: The processed pianoroll matrix with only the attack phases preserved.
 """
 function attack_only(pianoroll::Matrix)::Matrix
-    for j in 1:size(pianoroll, 2)
+    for j in axes(pianoroll, 2)
         col = pianoroll[:, j]
         if any(col .== 1)
             v = zeros(Int, length(col))
@@ -57,17 +57,19 @@ from the time steps where a note is already playing.
 - `Matrix{<:Integer}`: a matrix where the values are 0 (note not playing), 1 (note playing) or 2 (note ongoing). A note is considered ongoing if it is playing at the current time step and at the previous time step.
 """
 function mark_on_going(
-        pianoroll::Matrix{<:Integer}
-    )::Matrix{<:Integer}
+        pianoroll::AbstractMatrix{<:Integer}
+    )::AbstractMatrix{<:Integer}
     @assert all(x -> x == 0 || x == 1, pianoroll) "pianoroll must be a binary matrix with values 0 or 1."
 
-    marked_pianoroll = copy(pianoroll)
+    marked_pianoroll = deepcopy(pianoroll)
 
     # Iterate over the pitches
-    for j in 1:size(pianoroll, 2)
+    for j in axes(pianoroll, 2)
         # Iterate over the time steps
-        for i in 2:size(pianoroll, 1)  # Start from 2 since we need to check the previous timestep
-            # If at the current time step the note is playing as well at the previous time step then mark it as ongoing
+        # Start from the second time step since we need to check always the previous one
+        for i in axes(pianoroll, 1)[2:end]
+            # If at the current time step the note is playing as well at the previous one
+            # then mark it as ongoing (mark it with the number 2)
             if pianoroll[i, j] == 1 && pianoroll[i-1, j] == 1
                 marked_pianoroll[i, j] = 2
             end

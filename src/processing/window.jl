@@ -24,7 +24,7 @@ Perform a moving window on a pianoroll matrix where the columns are the pitches 
 - `Vector{Vector{Vector{Int}}}`: A vector of instances where each instance is a vector of feature vectors.
 """
 function movingwindow(
-        pianoroll::AbstractMatrix{Integer};
+        pianoroll::AbstractMatrix{<:Integer};
         resolution::Integer = 4,
         lookback_beats::Integer = 1,
         octaves_vision::Integer = 1,
@@ -42,13 +42,14 @@ function movingwindow(
 
     # Pad the pianoroll by adding columns filled with zeros to the left and right
     padded_pianoroll = hcat(
-        zeros(T <: Integer ? Int : T, nrows, octave_pad),
+        zeros(Int, nrows, octave_pad),
         pianoroll,
-        zeros(T <: Integer ? Int : T, nrows, octave_pad)
+        zeros(Int, nrows, octave_pad)
     )
 
+    # Pad the pianoroll with beginning silence (a.k.a. dead silence)
     if dead_silence
-        silence_pad = fill(T <: Integer ? 4 : T("4"), window_size, size(padded_pianoroll, 2))
+        silence_pad = fill(4, window_size, size(padded_pianoroll, 2))
         padded_pianoroll = vcat(silence_pad, padded_pianoroll)
     end
 
@@ -58,7 +59,7 @@ function movingwindow(
 
     # Pre-allocate result array
     num_instances = row_range * ncols
-    instances = Vector{Vector{Vector{T}}}(undef, num_instances)
+    instances = Vector{Vector{Vector{Int}}}(undef, num_instances)
 
     # Pre-compute number of features per instance
     num_features = window_width + (rhythm ? 3 : 0) + (unsupervised ? 0 : 1)
@@ -75,26 +76,26 @@ function movingwindow(
 
         @inbounds for j in 1:ncols
             # Create the flattened instance directly
-            flattened_instance = Vector{Vector{T}}(undef, num_features)
+            flattened_instance = Vector{Vector{Int}}(undef, num_features)
 
             # Extract columns as vectors using views to avoid copies
             col_end = j + window_width - 1
             @inbounds for k in 1:window_width
-                flattened_instance[k] = Vector{T}(@view padded_pianoroll[i:i + window_size - 1, j + k - 1])
+                flattened_instance[k] = Vector{Int}(@view padded_pianoroll[i:i + window_size - 1, j + k - 1])
             end
 
             feat_idx = window_width + 1
 
             if rhythm
-                flattened_instance[feat_idx] = T[label_beat]
-                flattened_instance[feat_idx + 1] = T[label_bar]
-                flattened_instance[feat_idx + 2] = T[normalized]
+                flattened_instance[feat_idx] = [label_beat]
+                flattened_instance[feat_idx + 1] = [label_bar]
+                flattened_instance[feat_idx + 2] = [normalized]
                 feat_idx += 3
             end
 
             # Add the label as the last element
             if !unsupervised
-                flattened_instance[feat_idx] = T[padded_pianoroll[i + window_size, j + octave_pad]]
+                flattened_instance[feat_idx] = [padded_pianoroll[i + window_size, j + octave_pad]]
             end
 
             instances[idx] = flattened_instance

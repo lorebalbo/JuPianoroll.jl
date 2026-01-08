@@ -12,6 +12,10 @@ include("input.jl")
 
 export read_midi
 
+# Types
+export AbstractTrack, AbstractMultitrack, AbstractKey
+export Track, Multitrack, Key
+
 # Analysis
 export n_tracks, tracks_name
 
@@ -22,6 +26,7 @@ export attack_only
 export movingwindow
 export diatonic, diatonic!
 export is_monophonic, is_polyphonic
+export mark_on_going
 
 # Utils
 export key_distance
