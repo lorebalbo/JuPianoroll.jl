@@ -175,7 +175,7 @@ end
         bpm::Union{<:Integer, <:Nothing} = nothing
     )::AbstractMultitrack
 
-Read a MIDI file from the specified path and convert it into a MultiTrack object.
+Read a MIDI file from the specified path and convert it into a Multitrack object.
 
 # Arguments
 - `path::AbstractString`: Path to the MIDI file.
@@ -184,7 +184,7 @@ Read a MIDI file from the specified path and convert it into a MultiTrack object
 - `bpm::Union{<:Integer, <:Nothing}`: Tempo in beats per minute. If `nothing`, uses the tempo from the MIDI file.
 
 # Returns
-- `AbstractMultitrack`: MultiTrack object representing the MIDI file.
+- `AbstractMultitrack`: Multitrack object representing the MIDI file.
 """
 function read_midi(
         path::AbstractString;
@@ -234,7 +234,7 @@ function read_midi(
 
     mt_name, _ = splitext(path)
 
-    MultiTrack(
+    Multitrack(
         mt_name,
         round(Int, 60_000_000 / _search_tempo(midi)),
         tracks,
