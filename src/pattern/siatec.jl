@@ -1,8 +1,3 @@
-struct SIATECResult
-    pattern::Vector{Tuple{Int, Int}}
-    translators::Vector{CartesianIndex{2}}
-end
-
 """
 	siatec(D::Vector{CartesianIndex{N}}) where N
 
@@ -125,7 +120,13 @@ function siatec(
     filter!(y -> !isempty(y[2]), Y)
     results = _get_siatec_results(Y, V)
 
-    return results, Y, V
+    return results
+end
+
+function siatec(
+        track::AbstractTrack;
+    )
+    siatec(findall(!iszero, track.pianoroll))
 end
 
 """
@@ -175,15 +176,15 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
     ax1 = Axis(fig[1, 1], xlabel = "Time", ylabel = "Pitch")
     colors_all = fill(:blue, length(D))
     Makie.scatter!(ax1, xs_all, ys_all, color = colors_all, markersize = 5)
-    xlims!(ax1, x_lim)
-    ylims!(ax1, y_lim)
+    Makie.xlims!(ax1, x_lim)
+    Makie.ylims!(ax1, y_lim)
 
     # Plot 2: Tutti i punti in blu tranne il pattern in rosso
     ax2 = Axis(fig[2, 1], xlabel = "Time", ylabel = "Pitch")
     colors_pattern = [p in pattern_cart ? :red : :blue for p in D]
     Makie.scatter!(ax2, xs_all, ys_all, color = colors_pattern, markersize = 5)
-    xlims!(ax2, x_lim)
-    ylims!(ax2, y_lim)
+    Makie.xlims!(ax2, x_lim)
+    Makie.ylims!(ax2, y_lim)
 
     # Plot 3+: Un grafico per ogni translator (massimo 4)
     for idx in 1:max_translators
@@ -197,8 +198,8 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
         ax = Axis(fig[2 + idx, 1], xlabel = "Time", ylabel = "Pitch",
                   title = "Translator $(Tuple(translator))")
         Makie.scatter!(ax, xs_all, ys_all, color = colors_translated, markersize = 5)
-        xlims!(ax, x_lim)
-        ylims!(ax, y_lim)
+        Makie.xlims!(ax, x_lim)
+        Makie.ylims!(ax, y_lim)
     end
 
     # Salva la figura se è stato specificato un filename
@@ -233,8 +234,8 @@ function plot_siatec_result(D::Vector{CartesianIndex{2}}, result::SIATECResult; 
                 Makie.scatter!(ax, xs_all, ys_all, color = colors_translated, markersize = 5)
             end
 
-            xlims!(ax, x_lim)
-            ylims!(ax, y_lim)
+            Makie.xlims!(ax, x_lim)
+            Makie.ylims!(ax, y_lim)
 
             individual_filename = "$(base_name)_plot_$(plot_idx)$(ext)"
             save(individual_filename, individual_fig)

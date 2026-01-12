@@ -12,7 +12,7 @@ diatonic scale pitches, discarding all non-diatonic pitch data without creating 
 - `AbstractMultitrack`: The same multitrack instance with modified track pianorolls containing only diatonic pitches.
 """
 function diatonic!(multitrack::AbstractMultitrack)::AbstractMultitrack
-    pitches_to_keep = get_pitches_in_scale(multitrack.key)
+    pitches_to_keep = sort(get_pitches_in_scale(multitrack.key))
 
     for track in multitrack.tracks
         track.pianoroll = track.pianoroll[:, pitches_to_keep]

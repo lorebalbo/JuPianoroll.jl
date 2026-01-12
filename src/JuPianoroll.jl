@@ -19,6 +19,7 @@ export read_midi
 # Types
 export AbstractTrack, AbstractMultitrack, AbstractKey
 export Track, Multitrack, Key
+export SIATECResult
 
 # Analysis
 export n_tracks, tracks_name

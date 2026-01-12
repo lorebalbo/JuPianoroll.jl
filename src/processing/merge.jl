@@ -50,7 +50,23 @@ function merge_pianorolls!(
         push!(pianorolls, transformed)
     end
 
-    merged_pianoroll = max.(pianorolls...)
+    # Ensure all pianorolls have the same dimensions by padding with zeros
+    max_rows = maximum(size(pr, 1) for pr in pianorolls)
+    max_cols = maximum(size(pr, 2) for pr in pianorolls)
+
+    padded_pianorolls = Vector{Matrix{Int}}()
+    for pr in pianorolls
+        rows, cols = size(pr)
+        if rows < max_rows || cols < max_cols
+            padded = zeros(Int, max_rows, max_cols)
+            padded[1:rows, 1:cols] = pr
+            push!(padded_pianorolls, padded)
+        else
+            push!(padded_pianorolls, pr)
+        end
+    end
+
+    merged_pianoroll = max.(padded_pianorolls...)
 
     merged_pianoroll[merged_pianoroll .== 900] .= 0
 
